@@ -11,13 +11,16 @@ console.log("📧 ENV CHECK:", {
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT), // 👈 MUST be number
-  secure: false, // true only for 465
+  port: Number(process.env.EMAIL_PORT),
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
+
+await transporter.verify();
+
 
 export default async function sendEmail(to, subject, message) {
   try {
