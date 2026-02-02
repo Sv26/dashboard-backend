@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 
-
 console.log("📧 Email service booting...");
 console.log("📧 ENV CHECK:", {
   EMAIL_HOST: process.env.EMAIL_HOST,
@@ -12,15 +11,12 @@ console.log("📧 ENV CHECK:", {
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: Number(process.env.EMAIL_PORT),
-  secure: false,
+  secure: false, // correct for 587
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
-
-await transporter.verify();
-
 
 export default async function sendEmail(to, subject, message) {
   try {
@@ -31,11 +27,10 @@ export default async function sendEmail(to, subject, message) {
       text: message,
     });
 
-    console.log("MAIL SENT:", info.response);
+    console.log("📨 MAIL SENT:", info.response);
     return info;
   } catch (err) {
-    console.error("MAIL ERROR:", err);
-    throw err;
+    console.error("❌ MAIL ERROR:", err.message);
+    return null; // ✅ do not crash server
   }
 }
-
