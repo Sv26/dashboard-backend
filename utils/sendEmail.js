@@ -20,10 +20,19 @@ const transporter = nodemailer.createTransport({
 });
 
 export default async function sendEmail(to, subject, message) {
-  return transporter.sendMail({
-    from: `"Company Name" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    text: message,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: `"Company Name" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      text: message,
+    });
+
+    console.log("MAIL SENT:", info.response);
+    return info;
+  } catch (err) {
+    console.error("MAIL ERROR:", err);
+    throw err;
+  }
 }
+
