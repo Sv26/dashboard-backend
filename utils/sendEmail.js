@@ -12,7 +12,7 @@ export default async function sendEmail(to, subject, message) {
     await apiInstance.sendTransacEmail({
       sender: {
         name: "Dashboard",
-        email: "shubhamsv2602@gmail.com",
+        email: "shubhamvermaoutstanding@gmail.com",
       },
       to: [{ email: to }],
       subject,
