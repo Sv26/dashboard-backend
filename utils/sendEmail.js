@@ -1,36 +1,28 @@
-import nodemailer from "nodemailer";
+import * as brevo from "@getbrevo/brevo";
 
-console.log("📧 Email service booting...");
-console.log("📧 ENV CHECK:", {
-  EMAIL_HOST: process.env.EMAIL_HOST,
-  EMAIL_PORT: process.env.EMAIL_PORT,
-  EMAIL_USER: process.env.EMAIL_USER,
-  EMAIL_PASS_EXISTS: !!process.env.EMAIL_PASS,
-});
+const apiInstance = new brevo.TransactionalEmailsApi();
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT),
-  secure: false, // correct for 587
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+apiInstance.setApiKey(
+  brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY,
+);
 
 export default async function sendEmail(to, subject, message) {
   try {
-    const info = await transporter.sendMail({
-      from: `"Company Name" <${process.env.EMAIL_USER}>`,
-      to,
+    await apiInstance.sendTransacEmail({
+      sender: {
+        name: "Dashboard",
+        email: "no-reply@dashboard.com", // can be any email initially
+      },
+      to: [{ email: to }],
       subject,
-      text: message,
+      textContent: message,
     });
 
-    console.log("📨 MAIL SENT:", info.response);
-    return info;
+    console.log("📨 MAIL SENT via Brevo");
+    return true;
   } catch (err) {
-    console.error("❌ MAIL ERROR:", err.message);
-    return null; // ✅ do not crash server
+    console.error("❌ BREVO ERROR:", err?.response?.text || err.message);
+    return false; // never crash server
   }
 }
